@@ -1,6 +1,6 @@
 NAME
     This is Gauche module yahoo-jp.
-    Yahoo! Japan Developer Newtwork API Module.
+    Yahoo! Japan Developer Newtwork API Module (search, news and text parse).
 
 VERSION
     0.0.1
