@@ -41,8 +41,9 @@
    web-title web-summary web-url web-clickurl web-modificationdata web-mimetype web-cacheurl web-cachesize
    image-title image-summary image-url image-clickurl image-refererurl image-filesize image-height image-width
    image-thumnailurl image-thumnailheight image-thumnailwidth
-   video-title video-summary video-url video-clickurl video-refererurl video-filesize video-height video-width
-   video-duration video-streaming video-channels video-thumbnailurl video-thumbnailheight video-thumbnailwidth
+   video-title video-summary video-url video-clickurl video-refererurl video-filesize video-fileformat
+   video-height video-width video-duration video-streaming video-channels video-thumbnailurl
+   video-thumbnailheight video-thumbnailwidth
    assist-search
    blog-id blog-rssurl blog-title blog-description blog-url blog-creator blog-mobilelink blog-datetime
    blog-sitetitle blog-siteurl
@@ -203,14 +204,15 @@
 (define (video-clickurl lst)        (list-ref lst 3))
 (define (video-refererurl lst)      (list-ref lst 4))
 (define (video-filesize lst)        (list-ref lst 5))
-(define (video-height lst)          (list-ref lst 6))
-(define (video-width lst)           (list-ref lst 7))
-(define (video-duration lst)        (list-ref lst 8))
-(define (video-streaming lst)       (list-ref lst 9))
-(define (video-channels lst)        (list-ref lst 10))
-(define (video-thumbnailurl lst)    (list-ref lst 11))
-(define (video-thumbnailheight lst) (list-ref lst 12))
-(define (video-thumbnailwidth lst)  (list-ref lst 13))
+(define (video-fileformat lst)      (list-ref lst 6))
+(define (video-height lst)          (list-ref lst 7))
+(define (video-width lst)           (list-ref lst 8))
+(define (video-duration lst)        (list-ref lst 9))
+(define (video-streaming lst)       (list-ref lst 10))
+(define (video-channels lst)        (list-ref lst 11))
+(define (video-thumbnailurl lst)    (list-ref lst 12))
+(define (video-thumbnailheight lst) (list-ref lst 13))
+(define (video-thumbnailwidth lst)  (list-ref lst 14))
 
 ;assist search
 (define (assist-result lst) lst)
