@@ -1,0 +1,15 @@
+NAME
+    This is Gauche module yahoo-jp.
+    Yahoo! Japan Developer Newtwork API Module.
+
+VERSION
+    0.0.1
+ 
+INSTALLATION
+    1. yahoo-jp.scm add copy to *load-path* directory.
+ 
+SYNOPSIS
+    none
+    
+AUTHOR
+    Takuya Mannami <mtakuya@users.sourceforge.jp>
