@@ -44,7 +44,7 @@
    video-title video-summary video-url video-clickurl video-refererurl video-filesize video-fileformat
    video-height video-width video-duration video-streaming video-channels video-thumbnailurl
    video-thumbnailheight video-thumbnailwidth
-   assist-search
+   assist-result
    blog-id blog-rssurl blog-title blog-description blog-url blog-creator blog-mobilelink blog-datetime
    blog-sitetitle blog-siteurl
    topics-datetime topics-createtime topics-newsupdatetime topics-relatedinfoupdatetime topics-headlineupdatetime
