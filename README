@@ -9,7 +9,8 @@ INSTALLATION
     1. yahoo-jp.scm add copy to *load-path* directory.
  
 SYNOPSIS
-    look at the example/*
+    - look at the example/*
+    - api document (http://developer.yahoo.co.jp/webapi/search/)
     
 AUTHOR
     Takuya Mannami <mtakuya@users.sourceforge.jp>
