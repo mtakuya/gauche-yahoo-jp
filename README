@@ -9,7 +9,7 @@ INSTALLATION
     1. yahoo-jp.scm add copy to *load-path* directory.
  
 SYNOPSIS
-    none
+    look at the example/*
     
 AUTHOR
     Takuya Mannami <mtakuya@users.sourceforge.jp>
