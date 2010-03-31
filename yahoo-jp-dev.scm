@@ -332,7 +332,7 @@
 (define (blog-description->string lst) (car (blog-description lst)))
 (define (blog-url->string lst)         (car (blog-url lst)))
 (define (blog-creator->string lst)     (car (blog-creator lst)))
-(define (blog-mobilelink->string lst)  (car(blog-mobilelink lst)))
+(define (blog-mobilelink->string lst)  (car (blog-mobilelink lst)))
 (define (blog-datetime->string lst)    (car (blog-datetime lst)))
 (define (blog-sitetitle->string lst)   (car (blog-sitetitle lst)))
 (define (blog-siteurl->string lst)     (car (blog-siteurl lst)))
