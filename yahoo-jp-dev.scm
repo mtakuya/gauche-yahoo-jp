@@ -1,5 +1,5 @@
-;;
-;;; yahoo-jp.scm - Yahoo! Japan Developer Newtwork API Module (v0.0.1)
+;;;
+;;; yahoo-jp-dev.scm - Yahoo! Japan Developer Newtwork API Module (v0.0.1)
 ;;;
 ;;; Copyright (c) 2010 Takuya Mannami <mtakuya@users.sourceforge.jp>
 ;;;
@@ -31,36 +31,91 @@
 ;;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ;;;
  
-(define-module yahoo-jp
+(define-module yahoo-jp-dev
   (use rfc.uri)
   (use rfc.http)
   (use sxml.ssax)
   (use sxml.sxpath)
   (use util.match)
   (export 
+
    web-title web-summary web-url web-clickurl web-modificationdata web-mimetype web-cacheurl web-cachesize
-   image-title image-summary image-url image-clickurl image-refererurl image-filesize image-height image-width
-   image-thumnailurl image-thumnailheight image-thumnailwidth
+
+   web-title->string web-summary->string web-url->string web-clickurl->string
+   web-modificationdata->string web-mimetype->string web-cacheurl->string web-cachesize->string
+
+   image-title image-summary image-url image-clickurl image-refererurl image-filesize image-height 
+   image-width image-thumnailurl image-thumnailheight image-thumnailwidth
+
+   image-title->string image-summary->string image-url->string image-clickurl->string
+   image-refererurl->string image-filesize->string image-height->string image-width->string
+   image-thumnailurl->string image-thumnailheight->string image-thumnailwidth->string
+
    video-title video-summary video-url video-clickurl video-refererurl video-filesize video-fileformat
    video-height video-width video-duration video-streaming video-channels video-thumbnailurl
    video-thumbnailheight video-thumbnailwidth
+
+   video-title->string video-summary->string video-url->string video-clickurl->string video-refererurl->string
+   video-filesize->string video-fileformat->string video-height->string video-width->string video-duration->string
+   video-streaming->string video-channels->string video-thumbnailurl->string
+   video-thumbnailheight->string video-thumbnailwidth->string
+
    assist-result
+   assist-result->string
+
    blog-id blog-rssurl blog-title blog-description blog-url blog-creator blog-mobilelink blog-datetime
    blog-sitetitle blog-siteurl
+
+   blog-id->string blog-rssurl->string blog-title->string blog-description->string blog-url->string
+   blog-creator->string blog-mobilelink->string blog-datetime->string blog-sitetitle->string blog-siteurl->string
+
    topics-datetime topics-createtime topics-newsupdatetime topics-relatedinfoupdatetime topics-headlineupdatetime
    topics-title topics-keyword topics-topicname topics-english topics-overview topics-overview topics-category
    topics-categorysub topics-url topics-pickupcategory topics-pickuporder topics-pvindex topics-editnum
    topics-newsnum topics-newsurl topics-relatedinformation
+
+   topics-datetime->string topics-createtime->string topics-newsupdatetime->string topics-relatedinfoupdatetime->string
+   topics-headlineupdatetime->string topics-title->string topics-keyword->string topics-topicname->string 
+   topics-english->string topics-overview->string topics-overview->string topics-category->string
+   topics-categorysub->string topics-url->string topics-pickupcategory->string topics-pickuporder->string
+   topics-pvindex->string topics-editnum->string topics-newsnum->string topics-newsurl->string
+   topics-relatedinformation->string
+
    heading-title heading-topicname heading-english heading-startdate heading-enddate heading-topicpickuptimes
    heading-pvtotal heading-url heading-topicbacknumberurl heading-midashibacknumberurl
+
+   heading-title->string heading-topicname->string heading-english->string heading-startdate->string 
+   heading-enddate->string heading-topicpickuptimes->string heading-pvtotal->string heading-url->string
+   heading-topicbacknumberurl->string heading-midashibacknumberurl->string
+
    topicslog-topicname topicslog-english topicslog-createdate topicslog-url topicslog-category
    topicslog-subcategory topicslog-keyword topicslog-totaltitlenum topicslog-totaltitletime 
-   topicslog-totaltitlepvindex topicslog-publicationinfo 
+   topicslog-totaltitlepvindex topicslog-publicationinfo
+ 
+   topicslog-topicname->string topicslog-english->string topicslog-createdate->string topicslog-url->string
+   topicslog-category->string topicslog-subcategory->string topicslog-keyword->string topicslog-totaltitlenum->string
+   topicslog-totaltitletime->string topicslog-totaltitlepvindex->string topicslog-publicationinfo->string
+
    maparse-ma-surface maparse-ma-reading maparse-ma-pos maparse-ma-baseform 
    maparse-uniq-count maparse-uniq-reading maparse-uniq-baseform maparse-uniq-pos
-   kousei-startpos kousei-length kousei-surface kousei-shitekiword kousei-shitekinfo 
+
+   maparse-ma-surface maparse-ma-reading->string maparse-ma-pos->string maparse-ma-baseform->string 
+   maparse-uniq-count->string maparse-uniq-reading->string maparse-uniq-baseform->string maparse-uniq-pos->string
+
+   kousei-startpos kousei-length kousei-surface kousei-shitekiword kousei-shitekinfo
+
+   kousei-startpos->string kousei-length->string kousei-surface->string kousei-shitekiword->string
+   kousei-shitekinfo->string
+
    da-parse-surface da-parse-reading da-parse-baseform da-parse-pos da-parse-feature 
+
+   da-parse-surface->string da-parse-reading->string da-parse-baseform->string da-parse-pos->string
+   da-parse-feature->string
+
    extract-keyphrase extract-score
+
+   extract-keyphrase->string extract-score->string
+
    <yahoo-jp> make-yahoo-jp
    yahoo:web-search yahoo:image-search yahoo:video-search yahoo:assist-search yahoo:blog-search
    yahoo:news-topics yahoo:news-heading yahoo:news-topicslog 
@@ -70,7 +125,7 @@
    yahoo:jlp-furigana-hiragana yahoo:jlp-furigana-roma yahoo:jlp-kousei
    yahoo:jlp-da-parse yahoo:jlp-extract)
  )
-(select-module yahoo-jp)
+(select-module yahoo-jp-dev)
 
 
 ;;-----------------------------------------------------------------
@@ -175,6 +230,7 @@
 
 ;search
 ;web search
+;return list
 (define (web-title lst)            (list-ref lst 0))
 (define (web-summary lst)          (list-ref lst 1))
 (define (web-url lst)              (list-ref lst 2))
@@ -184,7 +240,18 @@
 (define (web-cacheurl lst)         (list-ref lst 6))
 (define (web-cachesize lst)        (list-ref lst 7))
 
+;return string
+(define (web-title->string lst)            (car (web-title lst)))
+(define (web-summary->string lst)          (car (web-summary lst)))
+(define (web-url->string lst)              (car (web-url lst)))
+(define (web-clickurl->string lst)         (car (web-clickurl lst)))
+(define (web-modificationdata->string lst) (car (web-modificationdata lst)))
+(define (web-mimetype->string lst)         (car (web-mimetype lst)))
+(define (web-cacheurl->string lst)         (car (web-cacheurl lst)))
+(define (web-cachesize->string lst)        (car (web-cachesize lst)))
+
 ;image search
+;return list
 (define (image-title lst)          (list-ref lst 0))
 (define (image-summary lst)        (list-ref lst 1))
 (define (image-url lst)            (list-ref lst 2))
@@ -196,6 +263,19 @@
 (define (image-thumnailurl lst)    (list-ref lst 8))
 (define (image-thumnailheight lst) (list-ref lst 9))
 (define (image-thumnailwidth lst)  (list-ref lst 10))
+
+;return string
+(define (image-title->string lst)          (car (image-title lst)))
+(define (image-summary->stirng lst)        (car (image-summary lst)))
+(define (image-url->string lst)            (car (image-url lst)))
+(define (image-clickurl->string lst)       (car (image-clickurl lst)))
+(define (image-refererurl->string lst)     (car (image-refererurl lst)))
+(define (image-filesize->string lst)       (car (image-filesize lst)))
+(define (image-height->string lst)         (car (image-height lst)))
+(define (image-width->string lst)          (car (image-width lst)))
+(define (image-thumnailurl->string lst)    (car (image-thumnailurl lst)))
+(define (image-thumnailheight->string lst) (car (image-thumnailheight lst)))
+(define (image-thumnailwidth->string lst)  (car (image-thumnailwidth lst)))
 
 ;video search
 (define (video-title lst)           (list-ref lst 0))
@@ -214,8 +294,25 @@
 (define (video-thumbnailheight lst) (list-ref lst 13))
 (define (video-thumbnailwidth lst)  (list-ref lst 14))
 
+(define (video-title->string lst)           (car (video-title lst)))
+(define (video-summary->string lst)         (car (video-summary lst)))
+(define (video-url->string lst)             (car (video-url lst)))
+(define (video-clickurl->string lst)        (car (video-clickurl lst)))
+(define (video-refererurl->string lst)      (car (video-refererurl lst)))
+(define (video-filesize->string lst)        (car (video-filesize lst)))
+(define (video-fileformat->string lst)      (car (video-fileformat lst)))
+(define (video-height->string lst)          (car (video-height lst)))
+(define (video-width->string lst)           (car (video-width lst)))
+(define (video-duration->string lst)        (car (video-duration lst)))
+(define (video-streaming->string lst)       (car (video-streaming lst)))
+(define (video-channels->string lst)        (car (video-channels lst)))
+(define (video-thumbnailurl->string lst)    (car (video-thumbnailurl lst)))
+(define (video-thumbnailheight->string lst) (car (video-thumbnailheight lst)))
+(define (video-thumbnailwidth->string lst)  (car (video-thumbnailwidth lst)))
+
 ;assist search
-(define (assist-result lst) lst)
+(define (assist-result lst) lst) ;pass
+(define (assist-result->string lst) (car lst)) ; :)
 
 ;blog search
 (define (blog-id lst)          (list-ref lst 0))
@@ -228,6 +325,17 @@
 (define (blog-datetime lst)    (list-ref lst 7))
 (define (blog-sitetitle lst)   (list-ref lst 8))
 (define (blog-siteurl lst)     (list-ref lst 9))
+
+(define (blog-id->string lst)          (car (blog-id lst)))
+(define (blog-rssurl->string lst)      (car (blog-rssurl lst)))
+(define (blog-title->string lst)       (car (blog-title lst)))
+(define (blog-description->string lst) (car (blog-description lst)))
+(define (blog-url->string lst)         (car (blog-url lst)))
+(define (blog-creator->string lst)     (car (blog-creator lst)))
+(define (blog-mobilelink->string lst)  (car(blog-mobilelink lst)))
+(define (blog-datetime->string lst)    (car (blog-datetime lst)))
+(define (blog-sitetitle->string lst)   (car (blog-sitetitle lst)))
+(define (blog-siteurl->string lst)     (car (blog-siteurl lst)))
 
 ;news 
 ;topics
@@ -252,6 +360,27 @@
 (define (topics-newsurl lst)               (list-ref lst 18))
 (define (topics-relatedinformation lst)    (list-ref lst 19))
 
+(define (topics-datetime->string lst)              (car (topics-datetime lst)))
+(define (topics-createtime->string lst)            (car (topics-createtime lst)))
+(define (topics-newsupdatetime->string lst)        (car (topics-newsupdatetime lst)))
+(define (topics-relatedinfoupdatetime->string lst) (car (topics-relatedinfoupdatetime lst)))
+(define (topics-headlineupdatetime->string lst)    (car (topics-headlineupdatetime lst)))
+(define (topics-title->string lst)                 (car (topics-title lst)))
+(define (topics-keyword->string lst)               (car (topics-keyword lst)))
+(define (topics-topicname->string lst)             (car (topicname lst)))
+(define (topics-english->string lst)               (car (topics-english lst)))
+(define (topics-overview->string lst)              (car (topics-overview lst)))
+(define (topics-category->string lst)              (car (topics-category lst)))
+(define (topics-categorysub->string lst)           (car (topics-categorysub lst)))
+(define (topics-url->string lst)                   (car (topics-url lst)))
+(define (topics-pickupcategory->string lst)        (car (topics-pickupcategory lst)))
+(define (topics-pickuporder->string lst)           (car (topics-pickuporder lst)))
+(define (topics-pvindex->string lst)               (car (topics-pvindex lst)))
+(define (topics-editnum->string lst)               (car (topics-editnum lst)))
+(define (topics-newsnum->string lst)               (car (topics-newsnum lst)))
+(define (topics-newsurl->string lst)               (car (topics-newsurl lst)))
+(define (topics-relatedinformation->string lst)    (car (topics-relatedinformation lst)))
+
 ;heading
 (define (heading-title lst)                (list-ref lst 0))
 (define (heading-topicname lst)            (list-ref lst 1))
@@ -263,6 +392,17 @@
 (define (heading-url lst)                  (list-ref lst 7))
 (define (heading-topicbacknumberurl lst)   (list-ref lst 8))
 (define (heading-midashibacknumberurl lst) (list-ref lst 9))
+
+(define (heading-title->string lst)                (car (heading-title lst)))
+(define (heading-topicname->string lst)            (car (heading-topicname lst)))
+(define (heading-english->string lst)              (car (heading-english lst)))
+(define (heading-startdate->string lst)            (car (heading-startdate lst)))
+(define (heading-enddate->string lst)              (car (heading-enddate lst)))
+(define (heading-topicpickuptimes->string lst)     (car (heading-topicpickuptimes lst)))
+(define (heading-pvtotal->string lst)              (car (heading-pvtotal lst)))
+(define (heading-url->string lst)                  (car (heading-url lst)))
+(define (heading-topicbacknumberurl->string lst)   (car (heading-topicbacknumberurl lst)))
+(define (heading-midashibacknumberurl->string lst) (car (heading-midashibacknumberurl lst))) ; :)
 
 ;topicslog
 (define (topicslog-topicname lst)         (list-ref lst 0))
@@ -277,6 +417,18 @@
 (define (topicslog-totaltitlepvindex lst) (list-ref lst 9))
 (define (topicslog-publicationinfo lst)   (list-ref lst 10))
 
+(define (topicslog-topicname->string lst)         (car (topicslog-topicname lst)))
+(define (topicslog-english->string lst)           (car (topicslog-english lst)))
+(define (topicslog-createdate->string lst)        (car (topicslog-createdate lst)))
+(define (topicslog-url->string lst)               (car (topicslog-url lst)))
+(define (topicslog-category->string lst)          (car (topicslog-category lst)))
+(define (topicslog-subcategory->string lst)       (car (topicslog-subcategory lst)))
+(define (topicslog-keyword->string lst)           (car (topicslog-keyword lst)))
+(define (topicslog-totaltitlenum->string lst)     (car (topicslog-totaltitlenum lst)))
+(define (topicslog-totaltitletime->string lst)    (car (topicslog-totaltitletime lst)))
+(define (topicslog-totaltitlepvindex->string lst) (car (topicslog-totaltitlepvindex lst)))
+(define (topicslog-publicationinfo->string lst)   (car (topicslog-publicationinfo lst))) ; :)
+
 ;;jlp
 ;ma-parse
 ;ma-parse-ma
@@ -285,11 +437,21 @@
 (define (maparse-ma-pos lst)      (list-ref lst 2))
 (define (maparse-ma-baseform lst) (list-ref lst 3))
 
+(define (maparse-ma-surface->string lst)  (car (maparse-ma-surface lst)))
+(define (maparse-ma-reading->string lst)  (car (maparse-ma-reading lst)))
+(define (maparse-ma-pos->string lst)      (car (maparse-ma-pos lst)))
+(define (maparse-ma-baseform->string lst) (car (maparse-ma-baseform lst))) ; :)
+
 ;ma-parse-uniq
 (define (maparse-uniq-count lst)    (list-ref lst 0))
 (define (maparse-uniq-reading lst)  (list-ref lst 1))
 (define (maparse-uniq-baseform lst) (list-ref lst 2))
 (define (maparse-uniq-pos lst)      (list-ref lst 3))
+
+(define (maparse-uniq-count->string lst)    (car (maparse-uniq-count lst)))
+(define (maparse-uniq-reading->string lst)  (car (maparse-uniq-reading lst)))
+(define (maparse-uniq-baseform->string lst) (car (maparse-uniq-baseform lst)))
+(define (maparse-uniq-pos->string lst)      (car (maparse-uniq-pos lst)))
 
 ;kousei
 (define (kousei-startpos lst)    (list-ref lst 0))
@@ -298,6 +460,12 @@
 (define (kousei-shitekiword lst) (list-ref lst 3))
 (define (kousei-shitekinfo lst)  (list-ref lst 4))
 
+(define (kousei-startpos->string lst)    (car (kousei-startpos lst)))
+(define (kousei-length->string lst)      (car (kousei-length lst)))
+(define (kousei-surface->string lst)     (car (kousei-surface lst)))
+(define (kousei-shitekiword->string lst) (car (kousei-shitekiword lst)))
+(define (kousei-shitekinfo->string lst)  (car (kousei-shitekinfo lst)))
+
 ;da-parse
 (define (da-parse-surface lst)  (list-ref lst 0))
 (define (da-parse-reading lst)  (list-ref lst 1))
@@ -305,9 +473,18 @@
 (define (da-parse-pos lst)      (list-ref lst 3))
 (define (da-parse-feature lst)  (list-ref lst 4))
 
+(define (da-parse-surface->string lst)  (car (da-parse-surface lst)))
+(define (da-parse-reading->string lst)  (car (da-parse-reading lst)))
+(define (da-parse-baseform->string lst) (car (da-parse-baseform lst)))
+(define (da-parse-pos->string lst)      (car (da-parse-pos lst)))
+(define (da-parse-feature->string lst)  (car (da-parse-feature lst)))
+
 ;extract
 (define (extract-keyphrase lst) (list-ref lst 0))
 (define (extract-score lst)     (list-ref lst 1))
+
+(define (extract-keyphrase->string lst) (car (extract-keyphrase lst)))
+(define (extract-score->string lst)     (car (extract-score lst))) ;
 ;;
 
 ;;-----------------------------------------------------------------
@@ -410,7 +587,7 @@
 ;katakana
 (define (pat-jlp-conversion-katakana lst) lst) ;pass
 
-;half_katakana
+;harl_katakana
 (define (pat-jlp-conversion-half-katakana lst) lst) ;pass
 
 ;alphanumeric
@@ -470,102 +647,123 @@
 ;search
 (define-method yahoo:web-search ((obj <yahoo-jp>) query-alist)
   (make-results-alist obj
-   *host-search* *path-web-search* query-alist *sxml-path-web-search* pat-web-search))
+                      *host-search* *path-web-search* query-alist
+                      *sxml-path-web-search* pat-web-search))
 
 (define-method yahoo:image-search ((obj <yahoo-jp>) query-alist)
   (make-results-alist obj 
-   *host-search* *path-image-search* query-alist *sxml-path-image-search* pat-image-search))
+                      *host-search* *path-image-search* query-alist
+                      *sxml-path-image-search* pat-image-search))
 
 (define-method yahoo:video-search ((obj <yahoo-jp>) query-alist)
   (make-results-alist obj 
-   *host-search* *path-video-search* query-alist *sxml-path-video-search* pat-video-search))
+                      *host-search* *path-video-search* query-alist
+                      *sxml-path-video-search* pat-video-search))
 
 (define-method yahoo:assist-search ((obj <yahoo-jp>) query-alist)
   (make-results-alist obj
-   *host-search* *path-assist-search* query-alist *sxml-path-assist-search* pat-assist-search))
+                      *host-search* *path-assist-search* query-alist
+                      *sxml-path-assist-search* pat-assist-search))
 
 (define-method yahoo:blog-search ((obj <yahoo-jp>) query-alist)
   (make-results-alist obj
-   *host-search* *path-blog-search* query-alist *sxml-path-blog-search* pat-blog-search))
+                      *host-search* *path-blog-search* query-alist
+                      *sxml-path-blog-search* pat-blog-search))
 
 ;news
 (define-method yahoo:news-topics ((obj <yahoo-jp>) query-alist)
   (make-results-alist obj
-   *host-news* *path-news-topics* query-alist *sxml-path-news-topics* pat-news-topics))
+                      *host-news* *path-news-topics* query-alist
+                      *sxml-path-news-topics* pat-news-topics))
 
 (define-method yahoo:news-heading ((obj <yahoo-jp>) query-alist)
   (make-results-alist obj
-   *host-news* *path-news-heading* query-alist *sxml-path-news-heading* pat-news-heading))
+                      *host-news* *path-news-heading* query-alist
+                      *sxml-path-news-heading* pat-news-heading))
 
 (define-method yahoo:news-topicslog ((obj <yahoo-jp>) query-alist)
   (make-results-alist obj
-   *host-news* *path-news-topicslog* query-alist *sxml-path-news-topicslog* pat-news-topicslog))
+                      *host-news* *path-news-topicslog* query-alist
+                      *sxml-path-news-topicslog* pat-news-topicslog))
 
 ;jlp
 ;ma-parse
 (define-method yahoo:jlp-ma-parse-uniq ((obj <yahoo-jp>) query-alist) ;only uniq
   (make-results-alist obj
-   *host-jlp* *path-jlp-ma-parse* query-alist *sxml-path-jlp-ma-parse-uniq* pat-jlp-ma-parse-uniq))
+                      *host-jlp* *path-jlp-ma-parse* query-alist
+                      *sxml-path-jlp-ma-parse-uniq* pat-jlp-ma-parse-uniq))
 
 (define-method yahoo:jlp-ma-parse-ma ((obj <yahoo-jp>) query-alist) ;only ma
   (make-results-alist obj
-   *host-jlp* *path-jlp-ma-parse* query-alist *sxml-path-jlp-ma-parse-ma* pat-jlp-ma-parse-ma))
+                      *host-jlp* *path-jlp-ma-parse* query-alist
+                      *sxml-path-jlp-ma-parse-ma* pat-jlp-ma-parse-ma))
 
 ;conversion
 ;default
 (define-method yahoo:jlp-conversion ((obj <yahoo-jp>) query-alist)
   (make-results-alist obj
-   *host-jlp* *path-jlp-conversion* query-alist *sxml-path-jlp-conversion* pat-jlp-conversion))
+                      *host-jlp* *path-jlp-conversion* query-alist
+                      *sxml-path-jlp-conversion* pat-jlp-conversion))
 
 ;hiragana
 (define-method yahoo:jlp-conversion-hiragana ((obj <yahoo-jp>) query-alist)
   (make-results-alist obj
-   *host-jlp* *path-jlp-conversion* query-alist *sxml-path-jlp-conversion-hiragana* pat-jlp-conversion-hiragana))
+                      *host-jlp* *path-jlp-conversion* query-alist
+                      *sxml-path-jlp-conversion-hiragana* pat-jlp-conversion-hiragana))
 
 ;katakana
 (define-method yahoo:jlp-conversion-katakana ((obj <yahoo-jp>) query-alist)
   (make-results-alist obj
-   *host-jlp* *path-jlp-conversion* query-alist *sxml-path-jlp-conversion-katakana* pat-jlp-conversion-katakana))
+                      *host-jlp* *path-jlp-conversion* query-alist
+                      *sxml-path-jlp-conversion-katakana* pat-jlp-conversion-katakana))
 
 ;harf-katakana
 (define-method yahoo:jlp-conversion-half-katakana ((obj <yahoo-jp>) query-alist)
   (make-results-alist obj
-   *host-jlp* *path-jlp-conversion* query-alist *sxml-path-jlp-conversion-half-katakana* pat-jlp-conversion-half-katakana))
+                      *host-jlp* *path-jlp-conversion* query-alist
+                      *sxml-path-jlp-conversion-half-katakana* pat-jlp-conversion-half-katakana))
 
 ;alphanumeric
 (define-method yahoo:jlp-conversion-alphanumeric ((obj <yahoo-jp>) query-alist)
   (make-results-alist obj
-   *host-jlp* *path-jlp-conversion* query-alist *sxml-path-jlp-conversion-alphanumeric* pat-jlp-conversion-alphanumeric))
+                      *host-jlp* *path-jlp-conversion* query-alist
+                      *sxml-path-jlp-conversion-alphanumeric* pat-jlp-conversion-alphanumeric))
 
 ;half-alphanumeric
 (define-method yahoo:jlp-conversion-half-alphanumeric ((obj <yahoo-jp>) query-alist)
   (make-results-alist obj
-   *host-jlp* *path-jlp-conversion* query-alist *sxml-path-jlp-conversion-half-alphanumeric* pat-jlp-conversion-half-alphanumeric))
+                      *host-jlp* *path-jlp-conversion* query-alist
+                      *sxml-path-jlp-conversion-half-alphanumeric* pat-jlp-conversion-half-alphanumeric))
 
 ;furigana
 ;hiragana
 (define-method yahoo:jlp-furigana-hiragana ((obj <yahoo-jp>) query-alist)
   (make-results-alist obj
-   *host-jlp* *path-jlp-furigana* query-alist *sxml-path-jlp-furigana-hiragana* pat-jlp-furigana-hiragana))
+                      *host-jlp* *path-jlp-furigana* query-alist
+                      *sxml-path-jlp-furigana-hiragana* pat-jlp-furigana-hiragana))
 
 ;roma
 (define-method yahoo:jlp-furigana-roma ((obj <yahoo-jp>) query-alist)
   (make-results-alist obj
-   *host-jlp* *path-jlp-furigana* query-alist *sxml-path-jlp-furigana-roma* pat-jlp-furigana-roma))
+                      *host-jlp* *path-jlp-furigana* query-alist
+                      *sxml-path-jlp-furigana-roma* pat-jlp-furigana-roma))
 
 ;kousei
 (define-method yahoo:jlp-kousei ((obj <yahoo-jp>) query-alist)
   (make-results-alist obj
-   *host-jlp* *path-jlp-kousei* query-alist *sxml-path-jlp-kousei* pat-jlp-kousei))
+                      *host-jlp* *path-jlp-kousei* query-alist
+                      *sxml-path-jlp-kousei* pat-jlp-kousei))
 
 ;da-parse
 (define-method yahoo:jlp-da-parse ((obj <yahoo-jp>) query-alist)
   (make-results-alist obj
-   *host-jlp* *path-jlp-da-parse* query-alist *sxml-path-jlp-da-parse* pat-jlp-da-parse))
+                      *host-jlp* *path-jlp-da-parse* query-alist 
+                      *sxml-path-jlp-da-parse* pat-jlp-da-parse))
 
 ;extract
 (define-method yahoo:jlp-extract ((obj <yahoo-jp>) query-alist)
   (make-results-alist obj
-   *host-jlp* *path-jlp-extract* query-alist *sxml-path-jlp-extract* pat-jlp-extract))
+                      *host-jlp* *path-jlp-extract* query-alist
+                      *sxml-path-jlp-extract* pat-jlp-extract))
 
-(provide "yahoo-jp") ;0.8.x
+(provide "yahoo-jp-dev") ;0.8.x
