@@ -10,7 +10,9 @@ INSTALLATION
  
 SYNOPSIS
     - look at the example/*
-    - api document (http://developer.yahoo.co.jp/webapi/search/)
-    
+    - api document
+    -   http://developer.yahoo.co.jp/about
+    -   http://developer.yahoo.co.jp/
+
 AUTHOR
     Takuya Mannami <mtakuya@users.sourceforge.jp>
