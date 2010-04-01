@@ -11,8 +11,8 @@ INSTALLATION
 SYNOPSIS
     - look at the example/*
     - api document
-    -   http://developer.yahoo.co.jp/about
     -   http://developer.yahoo.co.jp/
+    -   http://developer.yahoo.co.jp/about
 
 AUTHOR
     Takuya Mannami <mtakuya@users.sourceforge.jp>
