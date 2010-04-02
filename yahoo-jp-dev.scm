@@ -99,7 +99,7 @@
    maparse-ma-surface maparse-ma-reading maparse-ma-pos maparse-ma-baseform 
    maparse-uniq-count maparse-uniq-reading maparse-uniq-baseform maparse-uniq-pos
 
-   maparse-ma-surface maparse-ma-reading->string maparse-ma-pos->string maparse-ma-baseform->string 
+   maparse-ma-surface->string maparse-ma-reading->string maparse-ma-pos->string maparse-ma-baseform->string 
    maparse-uniq-count->string maparse-uniq-reading->string maparse-uniq-baseform->string maparse-uniq-pos->string
 
    kousei-startpos kousei-length kousei-surface kousei-shitekiword kousei-shitekinfo
