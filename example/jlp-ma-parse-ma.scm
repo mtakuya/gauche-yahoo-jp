@@ -9,6 +9,7 @@
 
 (map (lambda (lst)
        (display (append (maparse-ma-reading lst)
-                        (maparse-ma-surface lst)))
+                        (maparse-ma-surface lst)
+                        (maparse-ma-pos lst)))
        (newline))
 res)
